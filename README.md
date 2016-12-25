@@ -1,8 +1,10 @@
 # Introduce This Project
-### + Why Develop This Project
-This is the homework project of CS3025301 Software Engineering Course  of 2016 Fall Semester in NTUST.  
-
-### + Introduction For TetrisGame Rules(俄羅斯方塊遊戲规则介绍)
+## + Why Develop This Project And Others
+* This is the homework project of CS3025301 Software Engineering Course  of 2016 Fall Semester in NTUST. 
+* This project uses jdk1.7 and the IDE is eclipse-neon-2.(Util Now 2016-12-25-15:57)
+* This project uses the MVC architecture pattern.
+    
+## + Introduction For TetrisGame Rules(俄羅斯方塊遊戲规则介绍)
 ####Introduction
 一塊積木由四個小方塊組成，所有的積木形狀如下，在格子區域中，一個小方塊會占用一個格子，已經被占的格子不能再被占用。  
 玩家利用數種積木在一個長方形的格子區域中進行排列，積木會出現在格子區域的上方，隨著時間積木會往下掉。
