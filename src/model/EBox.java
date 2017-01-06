@@ -6,50 +6,43 @@ import java.awt.*;
  *
  */
 public class EBox extends BoxModel {
-	public EBox(int x, int y, Color baseColor, Color briShaderColor, Color darkShaderColor) {
+	public EBox(int[] x, int[] y) {
 		setX(x);
 		setY(y);
-		setBaseColor(baseColor);
-		setBriShaderColor(briShaderColor);
-		setDarkShaderColor(darkShaderColor);
+		//记得标记最后一行的下一行为1
+		setAngle(0);
+		setBaseColor(Color.BLUE);
+//		setBriShaderColor(Color.BLUE.brighter());
+//		setDarkShaderColor(Color.BLUE.darker());
 	}
 
+	
+
 	@Override
-	public void drawBox(Graphics g) {
+	public void updateNextXY() {
 
-		Color norColor = getBaseColor();
-		Color briColor = getBriShaderColor();
-		Color darkColor = getDarkShaderColor();
-		int x = getX();
-		int y = getY();
-
-		g.setColor(norColor);
-		g.fillRect(x, y, getDIMENSION(), getDIMENSION());
-
-		g.setColor(darkColor);
-		g.fillRect(x + getDIMENSION() - getSHADEWIDTH(), y, getSHADEWIDTH(), getDIMENSION());// right
-																								// shade
-		g.fillRect(x, y + getDIMENSION() - getSHADEWIDTH(), getDIMENSION(), getSHADEWIDTH());// bottom
-																								// shade
-
-		g.setColor(briColor);
-		for (int i = 0; i < getSHADEWIDTH(); i++) {
-			g.drawLine(x, y + i, x + getDIMENSION() - i - 1, y + i);
-			g.drawLine(x + i, y, x + i, y + getDIMENSION() - i - 1);
+		switch(getAngle()){
+			case 0:
+			updateNextXY0();break;
+			case 90:
+				updateNextXY0();break;
+			case 180:
+				updateNextXY0();break;
+			case 270:
+				updateNextXY0();break;
 		}
 	}
 
-	// 一次设置两个坐标
-	@Override
-	public void setXY(int x, int y) {
-		this.setX(x);
-		this.setY(y);
-	}
+	public void updateNextXY0(){
+		int[] tNextX = new int[4];
+		int[] tNextY = new int[4];
 
-	@Override
-	public void drawTetrisBox() {
-		// TODO Auto-generated method stub
-		
+		for(int i = 0 ;i < 4; i++){
+			tNextX[i] = this.getX()[i];
+			tNextY[i] = this.getY()[i] + 1;
+		}
+		this.setNextX(tNextX);
+		this.setNextY(tNextY);
 	}
 
 }

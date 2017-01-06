@@ -1,43 +1,45 @@
 package model;
 
 import java.awt.Color;
-import java.awt.Graphics;
 
 /**
  *
  */
 public abstract class BoxModel {
-	private final int DIMENSION = 25;
-	private final int SHADEWIDTH = 4;
-	private int x;
-	private int y;
+	private   int DIMENSION = 25;// 一个方块大小，除了阴影
+	private   int SHADEWIDTH = 4;// 阴影面积
+	private int[] x;
+	private int[] y;
+	private int[] nextX;
+	private int[] nextY;
+	private int angle;
 	private Color baseColor;
-	private Color briShaderColor;
-	private Color darkShaderColor;
+	private int status;
+	private boolean isHitOthers;
 
-	public BoxModel() {
+	public BoxModel() {}
 
+	public abstract void updateNextXY();
+
+	// 一次设置两个坐标
+	public void setXY(int[] x, int[] y) {
+		this.setX(x);
+		this.setY(y);
 	}
-	
-	public abstract void drawTetrisBox();
 
-	public abstract void drawBox(Graphics g);
-
-	public abstract void setXY(int i, int j);// 一次设置两个坐标
-
-	public int getX() {
+	public int[] getX() {
 		return x;
 	}
 
-	public void setX(int x) {
+	public void setX(int[] x) {
 		this.x = x;
 	}
 
-	public int getY() {
+	public int[] getY() {
 		return y;
 	}
 
-	public void setY(int y) {
+	public void setY(int[] y) {
 		this.y = y;
 	}
 
@@ -49,28 +51,54 @@ public abstract class BoxModel {
 		this.baseColor = baseColor;
 	}
 
-	public Color getBriShaderColor() {
-		return briShaderColor;
-	}
-
-	public void setBriShaderColor(Color briShaderColor) {
-		this.briShaderColor = briShaderColor;
-	}
-
-	public Color getDarkShaderColor() {
-		return darkShaderColor;
-	}
-
-	public void setDarkShaderColor(Color darkShaderColor) {
-		this.darkShaderColor = darkShaderColor;
-	}
-
-	public int getDIMENSION() {
+	public  int getDIMENSION() {
 		return DIMENSION;
 	}
 
-	public int getSHADEWIDTH() {
+	public  int getSHADEWIDTH() {
 		return SHADEWIDTH;
+	}
+
+	public void setStatus(int status) {
+		// TODO Auto-generated method stub
+		this.status = status;
+	}
+
+	public int getStatus() {
+		// TODO Auto-generated method stub
+		return status;
+	}
+
+	public boolean isHitOthers() {
+		return isHitOthers;
+	}
+
+	public void setHitOthers(boolean isHitOthers) {
+		this.isHitOthers = isHitOthers;
+	}
+
+	public int[] getNextX() {
+		return nextX;
+	}
+
+	public void setNextX(int[] nextX) {
+		this.nextX = nextX;
+	}
+
+	public int[] getNextY() {
+		return nextY;
+	}
+
+	public void setNextY(int[] nextY) {
+		this.nextY = nextY;
+	}
+
+	public int getAngle() {
+		return angle;
+	}
+
+	public void setAngle(int angle) {
+		this.angle = angle;
 	}
 
 }
