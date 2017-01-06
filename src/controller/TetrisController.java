@@ -2,9 +2,11 @@ package controller;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.util.ArrayList;
-import java.util.List;
+
+import javax.swing.JLabel;
 
 import model.BoxModel;
 import model.EBox;
@@ -21,14 +23,16 @@ import view.TablePanel;
  *
  */
 public class TetrisController {
-	static MainPanelView mainJFrame;
+	public static MainPanelView mainJFrame;
 	private static boolean isStart;
 	private static int sleepTime;
 	private static boolean isMoveCols;
 	private int initialX, initialY;
+	private int score;
 
 	public TetrisController() {
-		setSleepTime(2000);// 初始化程序睡眠时间，用户看到的就是方块移动速度，值越大，速度越慢
+		this.setScore(0);
+		setSleepTime(1100);// 初始化程序睡眠时间，用户看到的就是方块移动速度，值越大，速度越慢
 	}
 
 	public static void main(String[] args) {
@@ -49,8 +53,9 @@ public class TetrisController {
 				TetrisController.setMoveCols(false);
 			} else {
 				if (getIsStart()) {
-					// 检查是否有满足一行，若有则记录。最后消除
-					removeLines();
+
+					removeLines();// 检查是否有满足一行，若有则记录。最后消除
+					checkIsOver();// 检查是否下一个位置中有被标记的方格，有则终止程序
 
 					mainJFrame.getTp().setGameStatus(0);// 更改tablePanel中的状态，表示可以显示方块了而不是显示文字状态
 
@@ -79,15 +84,15 @@ public class TetrisController {
 	public void removeLines() {
 		ArrayList<Integer> removeedRows = new ArrayList<Integer>();
 		checkFlag(removeedRows);
-		
-		//如果发现有某几行满了
+
+		// 如果发现有某几行满了
 		if (!removeedRows.isEmpty()) {
 			moveLines(removeedRows);
 		}
 	}
-	
+
 	// 检查和记录当前所有的满足一行的rows值
-	public void checkFlag(ArrayList<Integer> removeedRows){
+	public void checkFlag(ArrayList<Integer> removeedRows) {
 		boolean f = true;
 
 		for (int j = 0; j < 23; j++) {
@@ -102,9 +107,10 @@ public class TetrisController {
 				f = true;
 			}
 		}
-		
 	}
-	
+
+	// 1标记被消除的行flag为0
+	// 2往下移动所有没有被消除的方格的坐标
 	public void moveLines(ArrayList<Integer> removeedRows) {
 		// 标记被消除的行flag为0
 		for (int m = 0; m < removeedRows.size(); m++) {
@@ -114,7 +120,7 @@ public class TetrisController {
 				}
 			}
 		}
-		
+
 		// 往下移动所有没有被消除的方格的坐标
 		for (int j = 0; j < 23; j++) {
 			for (int i = 0; i < 13; i++) {
@@ -123,11 +129,37 @@ public class TetrisController {
 				}
 			}
 		}
+
+		// 记录得分
+		this.setScore(this.getScore() + 10);
 	}
 
+	// 判断是否触顶
+	public void checkIsOver() {
+		int nextX;
+		int nextY;
+		JLabel jlabel = new JLabel(
+				"<html><p>Game Over !</p><br><p>Your score is   " + this.getScore() + " ! </p></html>", JLabel.CENTER);
+		jlabel.setFont(new Font("Dialog", 1, 20));
+		jlabel.setForeground(Color.GREEN);
+
+		if (mainJFrame.getTp().getBox().getY()[0] == 0) {
+			for (int m = 0; m < 4; m++) {
+				nextX = mainJFrame.getTp().getBox().getNextX()[m];
+				nextY = mainJFrame.getTp().getBox().getNextY()[m];
+
+				if (mainJFrame.getTp().getPositioinFlag()[nextX][nextY][0] == 1) {
+					mainJFrame.getTp().setVisible(false);// 必须有，要不然会报错
+					mainJFrame.add(jlabel);
+					setIsStart(false);
+				}
+			}
+		}
+	}
+
+	// main中start()调用，移动
 	public void canMove() {
 		// 先把下一个位置坐标给他，设置好
-		// mainJFrame.getTp().getBox().setX(mainJFrame.getTp().getBox().getNextX());
 		mainJFrame.getTp().getBox().setY(mainJFrame.getTp().getBox().getNextY());
 
 		int[] tempX = mainJFrame.getTp().getBox().getX();
@@ -142,6 +174,11 @@ public class TetrisController {
 		for (int m = 0; m < 4; m++) {
 			nextX = mainJFrame.getTp().getBox().getNextX()[m];
 			nextY = mainJFrame.getTp().getBox().getNextY()[m];
+
+			if (nextX < 0 || nextY < 0) {
+				nextX = 0;
+				nextY = 0;
+			}
 
 			if ((mainJFrame.getTp().getPositioinFlag()[nextX][nextY][0] == 1)) {
 				mainJFrame.getTp().getBox().setStatus(0);
@@ -189,29 +226,29 @@ public class TetrisController {
 		int random = (int) (Math.random() * 1000) % 7;
 
 		switch (random) {
-		 case 0:
-		 newBox = this.createEBox();
-		 break;
-		 case 1:
-		 newBox = this.createIBox();
-		 break;
-		 case 2:
-		 newBox = this.createTBox();
-		 break;
-		 case 3:
-		 newBox = this.createLeftLBox();
-		 break;
-		 case 4:
-		 newBox = this.createRightLBox();
-		 break;
-		 case 5:
-		 newBox = this.createLeftZBox();
-		 break;
-		 case 6:
-		 newBox = this.createRightZBox();
-		 break;
-		default:
+		case 0:
+			newBox = this.createEBox();
+			break;
+		case 1:
+			newBox = this.createIBox();
+			break;
+		case 2:
 			newBox = this.createTBox();
+			break;
+		case 3:
+			newBox = this.createLeftLBox();
+			break;
+		case 4:
+			newBox = this.createRightLBox();
+			break;
+		case 5:
+			newBox = this.createLeftZBox();
+			break;
+		case 6:
+			newBox = this.createRightZBox();
+			break;
+		default:
+			newBox = this.createIBox();
 			break;
 		}
 		return newBox;
@@ -324,6 +361,14 @@ public class TetrisController {
 
 	public static void setMoveCols(boolean isMoveCols) {
 		TetrisController.isMoveCols = isMoveCols;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
 	}
 
 }

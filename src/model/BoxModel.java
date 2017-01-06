@@ -6,23 +6,27 @@ import java.awt.Color;
  *
  */
 public abstract class BoxModel {
-	private   int DIMENSION = 25;// 一个方块大小，除了阴影
-	private   int SHADEWIDTH = 4;// 阴影面积
+	private int DIMENSION = 25;// 一个方块大小，除了阴影
+	private int SHADEWIDTH = 4;// 阴影面积
 	private int[] x;
 	private int[] y;
 	private int[] nextX;
 	private int[] nextY;
 	private int angle;
-	private int currentAngle;//保存当前的角度
-	private Color baseColor;//在box里面控制旋转的角度
+	private int currentAngle;// 保存当前的角度
+	private Color baseColor;// 在box里面控制旋转的角度
 	private int status;
 	private boolean isHitOthers;
 
-	public BoxModel() {}
+	public BoxModel() {
+	}
 
 	public abstract void update90NextXY(int x1, int y1);
+
 	public abstract void update180NextXY(int x1, int y1);
+
 	public abstract void update270NextXY(int x1, int y1);
+
 	public abstract void update360NextXY(int x1, int y1);
 
 	// 一次设置两个坐标
@@ -35,17 +39,22 @@ public abstract class BoxModel {
 		int x1 = getX()[1];
 		int y1 = getY()[1];
 
-		switch(getAngle()){
+		switch (getAngle()) {
 		case 0:
-			update0NextXY();break;
+			update0NextXY();
+			break;
 		case 90:
-			update90NextXY(x1, y1);break;
+			update90NextXY(x1, y1);
+			break;
 		case 180:
-			update180NextXY(x1, y1);break;
+			update180NextXY(x1, y1);
+			break;
 		case 270:
-			update270NextXY(x1, y1);break;
+			update270NextXY(x1, y1);
+			break;
 		case 360:
-			update360NextXY(x1, y1);break;
+			update360NextXY(x1, y1);
+			break;
 		}
 	}
 
@@ -85,11 +94,11 @@ public abstract class BoxModel {
 		this.baseColor = baseColor;
 	}
 
-	public  int getDIMENSION() {
+	public int getDIMENSION() {
 		return DIMENSION;
 	}
 
-	public  int getSHADEWIDTH() {
+	public int getSHADEWIDTH() {
 		return SHADEWIDTH;
 	}
 
