@@ -1,11 +1,19 @@
 package controller;
 
-import java.awt.*;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 
-import model.*;
-import view.*;
+import model.BoxModel;
+import model.EBox;
+import model.IBox;
+import model.LeftLBox;
+import model.LeftZBox;
+import model.RightLBox;
+import model.RightZBox;
+import model.TBox;
+import view.MainPanelView;
+import view.TablePanel;
 
 /**
  *
@@ -34,12 +42,20 @@ public class TetrisController {
 
 		// 进入玩游戏状态并监听键盘事件
 		while (true) {
+			// 判断是否处于横向移动状态
 			if (this.isMoveCols()) {
 				TetrisController.setMoveCols(false);
 			} else {
 				if (getIsStart()) {
 					mainJFrame.getTp().setGameStatus(0);// 更改tablePanel中的状态，表示可以显示方块了而不是显示文字状态
-					move();
+
+					// 检查是否可以移动
+					if (mainJFrame.getTp().getBox().getStatus() == 1) {
+						canMove();// 如果可以移动，则每次移动一个格子。
+					} else {
+						mainJFrame.getTp().setBox(createRandomBoxModel());// 如果box被锁定不能移动，说明需要更新box状态了。
+						continue;
+					}
 				}
 			}
 
@@ -54,33 +70,6 @@ public class TetrisController {
 		}
 	}
 
-	public void move() {
-		// 如果可以移动，则每次移动一个格子
-		// 移动过程中会检查是否触底或者触及方块
-		if (mainJFrame.getTp().getBox().getStatus() == 1) {
-			canMove();
-		} else {
-			int random = (int) (1 + Math.random() * (3 - 0 + 1));
-			switch (random) {
-			case 0:
-				this.updateBoxModel();
-				break;
-			case 1:
-				this.updateBoxModel();
-				break;
-			case 2:
-				this.updateBoxModel();
-				break;
-			case 3:
-				this.updateBoxModel();
-				break;
-			default:
-				this.updateBoxModel();
-				break;
-			}
-		}
-	}
-
 	public void canMove() {
 		// 先把下一个位置坐标给他，设置好
 		// mainJFrame.getTp().getBox().setX(mainJFrame.getTp().getBox().getNextX());
@@ -91,7 +80,7 @@ public class TetrisController {
 		// 再更新下一个位置的下一个坐标
 		mainJFrame.getTp().getBox().updateNextXY();
 
-		// 判断是否触底以及 判断下方是否有积木
+		// 移动过程中会判断是否box触底以及 判断下方是否有积木
 		int nextX;
 		int nextY;
 		// 如果这个方格被标记，则开始判断是否在当前积木的下一个位置中
@@ -119,6 +108,9 @@ public class TetrisController {
 					if (c.getRGB() == Color.GREEN.getRGB()) {
 						colorCode = 3;
 					}
+					if (c.getRGB() == Color.PINK.getRGB()) {
+						colorCode = 3;
+					}
 
 					mainJFrame.getTp().updatePositioinFlag(tempX[n], tempY[n], 1, colorCode);// 要画的格子的颜色,0代表蓝色
 				}
@@ -132,28 +124,99 @@ public class TetrisController {
 		TablePanel tp = new TablePanel(200, 400, d.width, d.height, 2);
 
 		tp.setBox(createRandomBoxModel());
+		// tp.setBox(new RightZBox());
 
 		return tp;
 	}
 
-	// 新建一个boxmodel并初始化参数
-	private BoxModel createRandomBoxModel() {
+	public BoxModel createRandomBoxModel() {
+		BoxModel newBox;
+		int random = (int) (Math.random() * 1000) % 7;
 
-		int[] x = { 6, 7, 6, 7 };
-		int[] y = { -1, -1, 0, 0 };
-		BoxModel newBox = new EBox(x, y);
+		switch (random) {
+		case 0:
+			newBox = this.createEBox();
+			break;
+		case 1:
+			newBox = this.createIBox();
+			break;
+		case 2:
+			newBox = this.createTBox();
+			break;
+		case 3:
+			newBox = this.createLeftLBox();
+			break;
+		case 4:
+			newBox = this.createRightLBox();
+			break;
+		case 5:
+			newBox = this.createLeftZBox();
+			break;
+		case 6:
+			newBox = this.createRightZBox();
+			break;
+
+		default:
+			newBox = this.createRightZBox();
+			break;
+		}
+		return newBox;
+	}
+
+	// 新建一个田字积木并初始化参数
+	private BoxModel createEBox() {
+		BoxModel newBox = new EBox();
 		newBox.updateNextXY();
 		newBox.setStatus(1);
 		return newBox;
 	}
 
-	// 更新当前的boxmodel参数
-	private void updateBoxModel() {
-		int[] x1 = { 6, 7, 6, 7 };
-		int[] y1 = { 0, 0, 1, 1 };
-		mainJFrame.getTp().getBox().setStatus(1);
-		mainJFrame.getTp().getBox().setXY(x1, y1);
-		mainJFrame.getTp().getBox().updateNextXY();
+	// 新建一个I积木并初始化参数
+	private BoxModel createIBox() {
+		BoxModel newBox = new IBox();
+		newBox.updateNextXY();
+		newBox.setStatus(1);
+		return newBox;
+	}
+
+	// 新建一个Z积木并初始化参数
+	private BoxModel createTBox() {
+		BoxModel newBox = new TBox();
+		newBox.updateNextXY();
+		newBox.setStatus(1);
+		return newBox;
+	}
+
+	// 新建一个LeftL积木并初始化参数
+	private BoxModel createLeftLBox() {
+		BoxModel newBox = new LeftLBox();
+		newBox.updateNextXY();
+		newBox.setStatus(1);
+		return newBox;
+	}
+
+	// 新建一个RightL积木并初始化参数
+	private BoxModel createRightLBox() {
+		BoxModel newBox = new RightLBox();
+		newBox.updateNextXY();
+		newBox.setStatus(1);
+		return newBox;
+	}
+
+	// 新建一个LeftZ积木并初始化参数
+	private BoxModel createLeftZBox() {
+		BoxModel newBox = new LeftZBox();
+		newBox.updateNextXY();
+		newBox.setStatus(1);
+		return newBox;
+	}
+
+	// 新建一个RightZ积木并初始化参数
+	private BoxModel createRightZBox() {
+		BoxModel newBox = new RightZBox();
+		newBox.updateNextXY();
+		newBox.setStatus(1);
+		return newBox;
 	}
 
 	public void setBoxInitialXY(int initialX, int initialY) {

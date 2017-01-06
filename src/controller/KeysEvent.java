@@ -41,10 +41,10 @@ public class KeysEvent implements KeyListener {
 			moveRightBox();
 			break;
 		case "H":
-			rotateLeftBox();
+			clockwiseBox();
 			break;
 		case "N":
-			rotateRightBox();
+			counterclockwiseBox();
 			break;
 		case "A":
 			recoverSpeed();
@@ -133,12 +133,46 @@ public class KeysEvent implements KeyListener {
 		}
 	}
 
-	public void rotateLeftBox() {
-
+	public void clockwiseBox() {
+		int currentAngle = TetrisController.mainJFrame.getTp().getBox().getCurrentAngle();
+		
+		if(currentAngle == 0 || currentAngle == 360){
+			TetrisController.mainJFrame.getTp().getBox().setAngle(90);
+			TetrisController.mainJFrame.getTp().getBox().setCurrentAngle(90);
+		}
+		else if(currentAngle == 90){
+			TetrisController.mainJFrame.getTp().getBox().setAngle(180);
+			TetrisController.mainJFrame.getTp().getBox().setCurrentAngle(180);
+		}
+		else if(currentAngle == 180){
+			TetrisController.mainJFrame.getTp().getBox().setAngle(270);
+			TetrisController.mainJFrame.getTp().getBox().setCurrentAngle(270);
+		}
+		else if(currentAngle == 270){
+			TetrisController.mainJFrame.getTp().getBox().setAngle(360);
+			TetrisController.mainJFrame.getTp().getBox().setCurrentAngle(360);
+		}
 	}
 
-	public void rotateRightBox() {
-
+	public void counterclockwiseBox() {
+		int currentAngle = TetrisController.mainJFrame.getTp().getBox().getCurrentAngle();
+		
+		if(currentAngle == 0 || currentAngle == 360){
+			TetrisController.mainJFrame.getTp().getBox().setAngle(270);
+			TetrisController.mainJFrame.getTp().getBox().setCurrentAngle(270);
+		}
+		else if(currentAngle == 90){
+			TetrisController.mainJFrame.getTp().getBox().setAngle(360);
+			TetrisController.mainJFrame.getTp().getBox().setCurrentAngle(360);
+		}
+		else if(currentAngle == 180){
+			TetrisController.mainJFrame.getTp().getBox().setAngle(90);
+			TetrisController.mainJFrame.getTp().getBox().setCurrentAngle(90);
+		}
+		else if(currentAngle == 270){
+			TetrisController.mainJFrame.getTp().getBox().setAngle(180);
+			TetrisController.mainJFrame.getTp().getBox().setCurrentAngle(180);
+		}
 	}
 
 }

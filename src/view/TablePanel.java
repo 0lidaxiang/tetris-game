@@ -93,6 +93,8 @@ public class TablePanel extends JPanel {
 				baseColor = Color.YELLOW;break;
 			case 3:
 				baseColor = Color.GREEN;break;
+			case 4:
+				baseColor = Color.PINK;break;
 			default:
 				baseColor = Color.BLUE;break;
 		}

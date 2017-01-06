@@ -13,18 +13,52 @@ public abstract class BoxModel {
 	private int[] nextX;
 	private int[] nextY;
 	private int angle;
-	private Color baseColor;
+	private int currentAngle;//保存当前的角度
+	private Color baseColor;//在box里面控制旋转的角度
 	private int status;
 	private boolean isHitOthers;
 
 	public BoxModel() {}
 
-	public abstract void updateNextXY();
+	public abstract void update90NextXY(int x1, int y1);
+	public abstract void update180NextXY(int x1, int y1);
+	public abstract void update270NextXY(int x1, int y1);
+	public abstract void update360NextXY(int x1, int y1);
 
 	// 一次设置两个坐标
 	public void setXY(int[] x, int[] y) {
 		this.setX(x);
 		this.setY(y);
+	}
+
+	public void updateNextXY() {
+		int x1 = getX()[1];
+		int y1 = getY()[1];
+
+		switch(getAngle()){
+		case 0:
+			update0NextXY();break;
+		case 90:
+			update90NextXY(x1, y1);break;
+		case 180:
+			update180NextXY(x1, y1);break;
+		case 270:
+			update270NextXY(x1, y1);break;
+		case 360:
+			update360NextXY(x1, y1);break;
+		}
+	}
+
+	public void update0NextXY() {
+		int[] tNextX = new int[4];
+		int[] tNextY = new int[4];
+
+		for (int i = 0; i < 4; i++) {
+			tNextX[i] = this.getX()[i];
+			tNextY[i] = this.getY()[i] + 1;
+		}
+		this.setNextX(tNextX);
+		this.setNextY(tNextY);
 	}
 
 	public int[] getX() {
@@ -99,6 +133,14 @@ public abstract class BoxModel {
 
 	public void setAngle(int angle) {
 		this.angle = angle;
+	}
+
+	public int getCurrentAngle() {
+		return currentAngle;
+	}
+
+	public void setCurrentAngle(int currentAngle) {
+		this.currentAngle = currentAngle;
 	}
 
 }
