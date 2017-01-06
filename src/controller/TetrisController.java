@@ -3,6 +3,8 @@ package controller;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.List;
 
 import model.BoxModel;
 import model.EBox;
@@ -47,6 +49,9 @@ public class TetrisController {
 				TetrisController.setMoveCols(false);
 			} else {
 				if (getIsStart()) {
+					// 检查是否有满足一行，若有则记录。最后消除
+					removeLines();
+
 					mainJFrame.getTp().setGameStatus(0);// 更改tablePanel中的状态，表示可以显示方块了而不是显示文字状态
 
 					// 检查是否可以移动
@@ -66,6 +71,56 @@ public class TetrisController {
 				Thread.sleep(getSleepTime());
 			} catch (Exception e) {
 				e.printStackTrace();
+			}
+		}
+	}
+
+	// 消除一行
+	public void removeLines() {
+		ArrayList<Integer> removeedRows = new ArrayList<Integer>();
+		checkFlag(removeedRows);
+		
+		//如果发现有某几行满了
+		if (!removeedRows.isEmpty()) {
+			moveLines(removeedRows);
+		}
+	}
+	
+	// 检查和记录当前所有的满足一行的rows值
+	public void checkFlag(ArrayList<Integer> removeedRows){
+		boolean f = true;
+
+		for (int j = 0; j < 23; j++) {
+			for (int i = 0; i < 13; i++) {
+				if (mainJFrame.getTp().getPositioinFlag()[i][j][0] == 0) {
+					f = false;
+				}
+			}
+			if (f) {
+				removeedRows.add(j);
+			} else {
+				f = true;
+			}
+		}
+		
+	}
+	
+	public void moveLines(ArrayList<Integer> removeedRows) {
+		// 标记被消除的行flag为0
+		for (int m = 0; m < removeedRows.size(); m++) {
+			for (int i = 0; i < 13; i++) {
+				if (mainJFrame.getTp().getPositioinFlag()[i][removeedRows.get(m)][0] == 1) {
+					mainJFrame.getTp().getPositioinFlag()[i][removeedRows.get(m)][0] = 0;
+				}
+			}
+		}
+		
+		// 往下移动所有没有被消除的方格的坐标
+		for (int j = 0; j < 23; j++) {
+			for (int i = 0; i < 13; i++) {
+				if (mainJFrame.getTp().getPositioinFlag()[i][j][0] == 1) {
+					mainJFrame.getTp().getPositioinFlag()[i][j + removeedRows.size()][0] = 1;
+				}
 			}
 		}
 	}
@@ -109,7 +164,7 @@ public class TetrisController {
 						colorCode = 3;
 					}
 					if (c.getRGB() == Color.PINK.getRGB()) {
-						colorCode = 3;
+						colorCode = 4;
 					}
 
 					mainJFrame.getTp().updatePositioinFlag(tempX[n], tempY[n], 1, colorCode);// 要画的格子的颜色,0代表蓝色
@@ -134,30 +189,29 @@ public class TetrisController {
 		int random = (int) (Math.random() * 1000) % 7;
 
 		switch (random) {
-		case 0:
-			newBox = this.createEBox();
-			break;
-		case 1:
-			newBox = this.createIBox();
-			break;
-		case 2:
-			newBox = this.createTBox();
-			break;
-		case 3:
-			newBox = this.createLeftLBox();
-			break;
-		case 4:
-			newBox = this.createRightLBox();
-			break;
-		case 5:
-			newBox = this.createLeftZBox();
-			break;
-		case 6:
-			newBox = this.createRightZBox();
-			break;
-
+		 case 0:
+		 newBox = this.createEBox();
+		 break;
+		 case 1:
+		 newBox = this.createIBox();
+		 break;
+		 case 2:
+		 newBox = this.createTBox();
+		 break;
+		 case 3:
+		 newBox = this.createLeftLBox();
+		 break;
+		 case 4:
+		 newBox = this.createRightLBox();
+		 break;
+		 case 5:
+		 newBox = this.createLeftZBox();
+		 break;
+		 case 6:
+		 newBox = this.createRightZBox();
+		 break;
 		default:
-			newBox = this.createRightZBox();
+			newBox = this.createTBox();
 			break;
 		}
 		return newBox;
