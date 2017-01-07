@@ -36,26 +36,27 @@ public abstract class BoxModel {
 	}
 
 	public void updateNextXY() {
-		int x1 = getX()[1];
-		int y1 = getY()[1];
+		
+			int x1 = getX()[1];
+			int y1 = getY()[1];
 
-		switch (getAngle()) {
-		case 0:
-			update0NextXY();
-			break;
-		case 90:
-			update90NextXY(x1, y1);
-			break;
-		case 180:
-			update180NextXY(x1, y1);
-			break;
-		case 270:
-			update270NextXY(x1, y1);
-			break;
-		case 360:
-			update360NextXY(x1, y1);
-			break;
-		}
+			switch (getAngle()) {
+			case 0:
+				update0NextXY();
+				break;
+			case 90:
+				update90NextXY(x1, y1);
+				break;
+			case 180:
+				update180NextXY(x1, y1);
+				break;
+			case 270:
+				update270NextXY(x1, y1);
+				break;
+			case 360:
+				update360NextXY(x1, y1);
+				break;
+			}
 	}
 
 	public void update0NextXY() {

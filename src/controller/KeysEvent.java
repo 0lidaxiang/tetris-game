@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import model.BoxModel;
+import view.MainPanelView;
 
 public class KeysEvent implements KeyListener {
 	@Override
@@ -28,11 +29,17 @@ public class KeysEvent implements KeyListener {
 		case "S":
 			startGame();
 			break;
+		case "E":
+			exitGame();
+			break;
 		case "P":
 			pauseGame();
 			break;
 		case "Q":
-			quitGame();
+			quitRound();
+			break;
+		case "R":
+			reStartRound();
 			break;
 		case "B":
 			moveLeftBox();
@@ -57,25 +64,32 @@ public class KeysEvent implements KeyListener {
 	}
 
 	private void recoverSpeed() {
-		// 松开按键"S"后恢复原速度
+		// 松开按键"A"后恢复原速度
 		TetrisController.setSleepTime(1100);
 	}
 
 	public void startGame() {
 		// 修改tetriscontroller里面的一个控制开关，让游戏的方块可以更改坐标
-		TetrisController.setIsStart(true);
+		TetrisController.setPause(false);
+	}
+	
+	//重新开一轮游戏
+	public void reStartRound() {
+		TetrisController.setStart(true);
+		TetrisController.setPause(true);
+		TetrisController.getMainJFrame().setVisible(false);//让以前的窗口被隐藏
+		TetrisController.setMainJFrame(new MainPanelView(TetrisController.tetris.createTp()));
+		TetrisController.getMainJFrame().repaint();
 	}
 
 	public void pauseGame() {
-		if(TetrisController.getIsStart()){
-			TetrisController.setIsStart(false);
-		}
-		else{
-			TetrisController.setIsStart(true);
-		}
+		TetrisController.setPause(true);
 	}
 
-	public void quitGame() {
+	public void quitRound() {
+		TetrisController.setStart(false);
+	}
+	public void exitGame() {
 		System.exit(0);
 	}
 

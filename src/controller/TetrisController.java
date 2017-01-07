@@ -2,11 +2,8 @@ package controller;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Toolkit;
 import java.util.ArrayList;
-
-import javax.swing.JLabel;
 
 import model.BoxModel;
 import model.EBox;
@@ -23,12 +20,14 @@ import view.TablePanel;
  *
  */
 public class TetrisController {
+	public static TetrisController tetris;
 	public static MainPanelView mainJFrame;
-	private static boolean isStart;
+	private static boolean isStart;// 控制游戏是否在本轮继续还是重新开一轮
+	private static boolean isPause;// 控制游戏是否处于暂停状态
 	private static int sleepTime;
-	private static boolean isMoveCols;
-	private int initialX, initialY;
-	private int score;
+	private static boolean isMoveCols;// 判定积木是否横向移动
+	private int initialX, initialY; //
+	private static int score; // 用户在本轮中的得分
 
 	public TetrisController() {
 		this.setScore(0);
@@ -36,13 +35,14 @@ public class TetrisController {
 	}
 
 	public static void main(String[] args) {
-		TetrisController tetris = new TetrisController();
+		tetris = new TetrisController();
 		tetris.start();
 	}
 
 	public void start() {
-		setIsStart(true);// for test,表示可以移动方块了，也就是游戏开始
-		// setIsStart(false);// 表示初始状态时不可以移动方块了，直到按‘S’才启动
+		setStart(true);
+		setPause(true); // 刚打开游戏，第一轮处于暂停状态
+		setScore(0);
 		MainPanelView mainPanelView = new MainPanelView(createTp());
 		setMainJFrame(mainPanelView);// 画面板和其他部分
 
@@ -52,20 +52,37 @@ public class TetrisController {
 			if (this.isMoveCols()) {
 				TetrisController.setMoveCols(false);
 			} else {
-				if (getIsStart()) {
+				// 判断是否开始游戏状态
+				if (isStart()) {
+					if (!isPause()) {
+//						mainJFrame.remove(mainJFrame.getGameStartLabel());//移除暂停状态的那个文字显示
+//						mainJFrame.getGameStartLabel().setVisible(false);//移除暂停状态的那个文字显示
+						
+						removeLines();// 检查是否有满足一行，若有则记录。最后消除
+						checkIsOver();// 检查是否下一个位置中有被标记的方格，有则终止程序
 
-					removeLines();// 检查是否有满足一行，若有则记录。最后消除
-					checkIsOver();// 检查是否下一个位置中有被标记的方格，有则终止程序
+						mainJFrame.getTp().setGameStatus(0);// 更改tablePanel中的状态，表示可以显示方块了而不是显示文字状态
 
-					mainJFrame.getTp().setGameStatus(0);// 更改tablePanel中的状态，表示可以显示方块了而不是显示文字状态
-
-					// 检查是否可以移动
-					if (mainJFrame.getTp().getBox().getStatus() == 1) {
-						canMove();// 如果可以移动，则每次移动一个格子。
-					} else {
-						mainJFrame.getTp().setBox(createRandomBoxModel());// 如果box被锁定不能移动，说明需要更新box状态了。
-						continue;
+						// 检查是否可以移动
+						if (mainJFrame.getTp().getBox().getStatus() == 1) {
+							canMove();// 如果可以移动，则每次移动一个格子。
+						} else {
+							mainJFrame.getTp().setBox(createRandomBoxModel());// 如果box被锁定不能移动，说明需要更新box状态了。
+							continue;
+						}
 					}
+//					else {
+					//控制游戏处于暂停时显示文字
+//						mainJFrame.setGameStartLabel("<html><p>Game Pausing!</p><br><p>Press 'S' to start.</p></html>");
+//						mainJFrame.add(mainJFrame.getGameStartLabel());
+//						mainJFrame.setVisible(true);// 必须有，要不然会报错
+//					}
+				} else {
+					mainJFrame.getTp().setVisible(false);
+					mainJFrame.setGameOverLabel(getScore());
+					mainJFrame.add(mainJFrame.getGameOverLabel());
+					mainJFrame.remove(mainJFrame.getTp());
+					mainJFrame.setVisible(true);
 				}
 			}
 
@@ -89,6 +106,9 @@ public class TetrisController {
 		if (!removeedRows.isEmpty()) {
 			moveLines(removeedRows);
 		}
+
+		// 最后清空该数组，等待下次消除
+		removeedRows.clear();
 	}
 
 	// 检查和记录当前所有的满足一行的rows值
@@ -112,36 +132,37 @@ public class TetrisController {
 	// 1标记被消除的行flag为0
 	// 2往下移动所有没有被消除的方格的坐标
 	public void moveLines(ArrayList<Integer> removeedRows) {
-		// 标记被消除的行flag为0
+		// 标记被消除的行的所有方格flag为0
 		for (int m = 0; m < removeedRows.size(); m++) {
 			for (int i = 0; i < 13; i++) {
-				if (mainJFrame.getTp().getPositioinFlag()[i][removeedRows.get(m)][0] == 1) {
-					mainJFrame.getTp().getPositioinFlag()[i][removeedRows.get(m)][0] = 0;
-				}
+				mainJFrame.getTp().getPositioinFlag()[i][removeedRows.get(m)][0] = 0;
 			}
 		}
 
 		// 往下移动所有没有被消除的方格的坐标
-		for (int j = 0; j < 23; j++) {
-			for (int i = 0; i < 13; i++) {
-				if (mainJFrame.getTp().getPositioinFlag()[i][j][0] == 1) {
-					mainJFrame.getTp().getPositioinFlag()[i][j + removeedRows.size()][0] = 1;
+		// 所有被消除的行开始往上
+		for (int m = removeedRows.size() - 1; m >= 0; m--) {
+			for (int j = removeedRows.get(m); j >= 0; j--) {
+				for (int i = 0; i < 13; i++) {
+					if (mainJFrame.getTp().getPositioinFlag()[i][j][0] == 1) {
+						mainJFrame.getTp().getPositioinFlag()[i][j][0] = 0;
+						mainJFrame.getTp().getPositioinFlag()[i][j + removeedRows.size()][0] = 1;
+					}
 				}
 			}
 		}
 
 		// 记录得分
-		this.setScore(this.getScore() + 10);
+		this.setScore(getScore() + 10);
+		// 重新写入显示的分数
+		mainJFrame.getSocreLabel().setText("\t  \t  \t  \t  \t Score : \t" + getScore());
+		;// 不断flush画面
 	}
 
 	// 判断是否触顶
 	public void checkIsOver() {
 		int nextX;
 		int nextY;
-		JLabel jlabel = new JLabel(
-				"<html><p>Game Over !</p><br><p>Your score is   " + this.getScore() + " ! </p></html>", JLabel.CENTER);
-		jlabel.setFont(new Font("Dialog", 1, 20));
-		jlabel.setForeground(Color.GREEN);
 
 		if (mainJFrame.getTp().getBox().getY()[0] == 0) {
 			for (int m = 0; m < 4; m++) {
@@ -149,9 +170,7 @@ public class TetrisController {
 				nextY = mainJFrame.getTp().getBox().getNextY()[m];
 
 				if (mainJFrame.getTp().getPositioinFlag()[nextX][nextY][0] == 1) {
-					mainJFrame.getTp().setVisible(false);// 必须有，要不然会报错
-					mainJFrame.add(jlabel);
-					setIsStart(false);
+					setStart(false);
 				}
 			}
 		}
@@ -175,9 +194,12 @@ public class TetrisController {
 			nextX = mainJFrame.getTp().getBox().getNextX()[m];
 			nextY = mainJFrame.getTp().getBox().getNextY()[m];
 
-			if (nextX < 0 || nextY < 0) {
+			if (nextX < 0) {
 				nextX = 0;
-				nextY = 0;
+			}
+
+			if (nextX > 12) {
+				nextX = 12;
 			}
 
 			if ((mainJFrame.getTp().getPositioinFlag()[nextX][nextY][0] == 1)) {
@@ -214,9 +236,7 @@ public class TetrisController {
 	public TablePanel createTp() {
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		TablePanel tp = new TablePanel(200, 400, d.width, d.height, 2);
-
 		tp.setBox(createRandomBoxModel());
-		// tp.setBox(new RightZBox());
 
 		return tp;
 	}
@@ -347,12 +367,20 @@ public class TetrisController {
 		TetrisController.sleepTime = sleepTime;
 	}
 
-	public static boolean getIsStart() {
+	public static boolean isStart() {
 		return isStart;
 	}
 
-	public static void setIsStart(boolean flag) {
+	public static void setStart(boolean flag) {
 		isStart = flag;
+	}
+
+	public static boolean isPause() {
+		return isPause;
+	}
+
+	public static void setPause(boolean isPause) {
+		TetrisController.isPause = isPause;
 	}
 
 	public boolean isMoveCols() {
@@ -363,12 +391,12 @@ public class TetrisController {
 		TetrisController.isMoveCols = isMoveCols;
 	}
 
-	public int getScore() {
+	public static int getScore() {
 		return score;
 	}
 
 	public void setScore(int score) {
-		this.score = score;
+		TetrisController.score = score;
 	}
 
 }
