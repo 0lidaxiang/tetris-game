@@ -22,9 +22,9 @@ import view.TablePanel;
 public class TetrisController {
 	public static TetrisController tetris;
 	public static MainPanelView mainJFrame;
-	private static boolean isStart;// 控制游戏是否在本轮继续还是重新开一轮
-	private static boolean isPause;// 控制游戏是否处于暂停状态
-	private static int sleepTime;
+	public static boolean isStart;// 控制游戏是否在本轮继续还是重新开一轮
+	public static boolean isPause;// 控制游戏是否处于暂停状态
+	public static int sleepTime;
 	private static boolean isMoveCols;// 判定积木是否横向移动
 	private int initialX, initialY; //
 	private static int score; // 用户在本轮中的得分

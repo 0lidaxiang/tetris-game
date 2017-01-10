@@ -7,6 +7,12 @@ import model.BoxModel;
 import view.MainPanelView;
 
 public class KeysEvent implements KeyListener {
+	public static int flag=0;
+	public String userInput;
+	public void setUserInput(String userInput) {
+		this.userInput = userInput;
+	}
+	
 	@Override
 	public void keyTyped(KeyEvent e) {
 	}
@@ -14,16 +20,17 @@ public class KeysEvent implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// 长时间按住键
-		String userInput = "" + e.getKeyChar();
+		userInput = "" + e.getKeyChar();
 		if (userInput.equals("A")) {
-			TetrisController.setSleepTime(80);
+			TetrisController.setSleepTime(50);
 		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		System.out.println("in keyreleased");
 		// 松开某个键
-		String userInput = "" + e.getKeyChar();
+		 userInput = "" + e.getKeyChar();
 
 		switch (userInput) {
 		case "S":
@@ -63,21 +70,23 @@ public class KeysEvent implements KeyListener {
 		System.out.println("userInput" + userInput);
 	}
 
-	private void recoverSpeed() {
+	public void recoverSpeed() {
+		System.out.println("in recove");
 		// 松开按键"A"后恢复原速度
 		TetrisController.setSleepTime(1100);
+		flag=6;
 	}
 
 	public void startGame() {
 		// 修改tetriscontroller里面的一个控制开关，让游戏的方块可以更改坐标
 		TetrisController.setPause(false);
 	}
-	
-	//重新开一轮游戏
+
+	// 重新开一轮游戏
 	public void reStartRound() {
 		TetrisController.setStart(true);
 		TetrisController.setPause(true);
-		TetrisController.getMainJFrame().setVisible(false);//让以前的窗口被隐藏
+		TetrisController.getMainJFrame().setVisible(false);// 让以前的窗口被隐藏
 		TetrisController.setMainJFrame(new MainPanelView(TetrisController.tetris.createTp()));
 		TetrisController.getMainJFrame().repaint();
 	}
@@ -89,6 +98,7 @@ public class KeysEvent implements KeyListener {
 	public void quitRound() {
 		TetrisController.setStart(false);
 	}
+
 	public void exitGame() {
 		System.exit(0);
 	}
@@ -121,6 +131,7 @@ public class KeysEvent implements KeyListener {
 			TetrisController.setMoveCols(true);
 			TetrisController.mainJFrame.repaint();// 每次左右或旋转移动后刷新界面，立刻显示
 		}
+		flag=2;
 	}
 
 	public void moveRightBox() {
@@ -151,11 +162,12 @@ public class KeysEvent implements KeyListener {
 			TetrisController.setMoveCols(true);
 			TetrisController.mainJFrame.repaint();// 每次左右或旋转移动后刷新界面，立刻显示
 		}
+		flag=3;
 	}
 
 	public void clockwiseBox() {
 		int currentAngle = TetrisController.mainJFrame.getTp().getBox().getCurrentAngle();
-
+		flag=4;
 		if (currentAngle == 0 || currentAngle == 360) {
 			TetrisController.mainJFrame.getTp().getBox().setAngle(90);
 			TetrisController.mainJFrame.getTp().getBox().setCurrentAngle(90);
@@ -169,11 +181,12 @@ public class KeysEvent implements KeyListener {
 			TetrisController.mainJFrame.getTp().getBox().setAngle(360);
 			TetrisController.mainJFrame.getTp().getBox().setCurrentAngle(360);
 		}
+		
 	}
 
 	public void counterclockwiseBox() {
 		int currentAngle = TetrisController.mainJFrame.getTp().getBox().getCurrentAngle();
-
+		flag=5;
 		if (currentAngle == 0 || currentAngle == 360) {
 			TetrisController.mainJFrame.getTp().getBox().setAngle(270);
 			TetrisController.mainJFrame.getTp().getBox().setCurrentAngle(270);

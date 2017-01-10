@@ -1,6 +1,6 @@
 package model;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class LeftZBox extends BoxModel {
 
