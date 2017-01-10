@@ -16,7 +16,7 @@ public class KeysEvent implements KeyListener {
 		// 长时间按住键
 		String userInput = "" + e.getKeyChar();
 		if (userInput.equals("A")) {
-			TetrisController.setSleepTime(50);
+			TetrisController.setSleepTime(80);
 		}
 	}
 
